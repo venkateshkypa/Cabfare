@@ -4,10 +4,9 @@
  1. R code of project in ‘.R format’:  Cabfare_Prediction_Final_R.R 
  2. Python code of project in ‘.ipynb format’: Cab fare_Prediction_Final_Python.py 
  3. Project report: Cab Fare Prediction.docx
- 4. Saved Model trained on entire training dataset from python: cab_fare_xgboost_model.rar
- 6. Saved Model trained on entire training dataset from python:  	final_Xgboost_model_using_R.rar
- 7. Predictions on test dataset in csv format:predictions_xgboost.csv
-
+ 4. Saved Model trained on entire training dataset from both R & python: Final_Model_Cabfare.rds 
+ 5. Predictions on test dataset in csv format:cabfare_predictions_R.csv
+ 
 ## Problem Statement 
  
 The objective of this Project is to Predict Cab Fare amount based upon following data attributes in the dataset are as follows:
