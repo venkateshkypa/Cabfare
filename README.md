@@ -1,8 +1,8 @@
 # Cabfare Prediction Project
 
  GitHub folder contains: 
- 1. R code of project in ‘.R format’:  Cab Fare Prediction Using R.R 
- 2. Python code of project in ‘.ipynb format’: Cab Fare Prediction Using Python.py 
+ 1. R code of project in ‘.R format’:  Cabfare_Prediction_Final_R.R 
+ 2. Python code of project in ‘.ipynb format’: Cab fare_Prediction_Final_Python.py 
  3. Project report: Cab Fare Prediction.pdf 
  4. Problem Statement.pdf 
  5. Saved Model trained on entire training dataset from python: cab_fare_xgboost_model.rar
