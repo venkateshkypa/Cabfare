@@ -223,9 +223,9 @@ cabfare$pick_year<-factor(cabfare$pick_year, levels = c(2009,2010,2011,2012,2013
 ## Assigning levels to the pickup_hours 
 
 cabfare$pickup_hours[which((cabfare$pickup_hours >=7) & (cabfare$pickup_hours <= 12))]<-'Mornings'
-cabfare$pickup_hours[which((cabfare$pickup_hours >=19) & (cabfare$pickup_hours <= 24))]<-'Late Night'
-cabfare$pickup_hours[which((cabfare$pickup_hours >=12) & (cabfare$pickup_hours <=18))]<-'After Noon'
-cabfare$pickup_hours[which((cabfare$pickup_hours >=0) & (cabfare$pickup_hours <= 6))]<-'Early Morning'
+cabfare$pickup_hours[which((cabfare$pickup_hours > 18) & (cabfare$pickup_hours <= 24))]<-'Late Night'
+cabfare$pickup_hours[which((cabfare$pickup_hours > 12) & (cabfare$pickup_hours <= 18))]<-'After Noon'
+cabfare$pickup_hours[which((cabfare$pickup_hours >= 0) & (cabfare$pickup_hours < 7))]<-'Early Morning'
 cabfare$pickup_hours<-factor(cabfare$pickup_hours,levels = c("Mornings","Late Night","After Noon","Early Morning"), labels = c(1:4))
 
 
@@ -390,7 +390,7 @@ distance(long1 = Cabfare_test$pickup_longitude, lat1 = Cabfare_test$pickup_latit
 Cabfare_test$distance<-d12
 rm(d12)
 
-Cabfare_test<-subset(Cabfare_test, select = -c(pickup_datetime,pickup_longitude,pickup_latitude,dropoff_longitude,dropoff_latitude))
+Cabfare_test<-subset(Cabfare_test, select = -c(pickup_longitude,pickup_latitude,dropoff_longitude,dropoff_latitude))
 
 Cabfare_test<-subset(Cabfare_test, select = -c(pickup_day))
 
@@ -473,23 +473,21 @@ Rf_pred_values<- data.frame(test_pickup_datetime, "predictions" = Rf_pred)
 
 ################### Applying Selected Technique on the Cabfare_test data ######################################
 
-train_cabfare_data<- as.matrix(sapply(Cab_train[,-1], as.numeric))
-test_cabfare_data<-as.matrix(sapply(Cabfare_test, as.numeric))
 
-xgboost_model_final = xgboost(data = train_cabfare_data ,label = Cab_train$fare_amount,nrounds = 25,verbose = FALSE)
-xgb_pred<-predict(xgboost_model_final,test_cabfare_data)
+boost_model<-gbm(fare_amount~.,data = Cab_train, distribution = "gaussian", n.trees = 10000, shrinkage = 0.01, interaction.depth = 4)
 
-
-saveRDS(xgboost_model_final,"C:\\Users\\kyvenkat\\Desktop\\W0376 Backup\\Datasets\\Final_Model_Cabafare.rds")
-
-End_model<- readRDS("C:\\Users\\kyvenkat\\Desktop\\W0376 Backup\\Datasets\\Final_Model_Cabafare.rds")
-
-print(End_model)
-
-a  = read.csv("C:\\Users\\kyvenkat\\Desktop\\W0376 Backup\\Datasets\\cabfare_test.csv", header = TRUE)
+gbm_pred<-predict(boost_model,Cabfare_test[,2:6], n.trees = 10000)
 
 
-Cabfare_wrt_datetime = data.frame(test_pickup_datetime,"predictions" = xgb_pred)
+
+saveRDS(boost_model,"C:\\Users\\kyvenkat\\Desktop\\W0376 Backup\\Datasets\\Final_Model_Cabafare.rds")
+
+Final_Cabfare_model<- readRDS("C:\\Users\\kyvenkat\\Desktop\\W0376 Backup\\Datasets\\Final_Model_Cabafare.rds")
+
+print(Final_Cabfare_model)
+
+
+Cabfare_wrt_datetime = data.frame(Cabfare_test$pickup_datetime,"predictions" = gbm_pred)
 
 ############## Writing Predicted values in .csv file ##################
 
@@ -500,37 +498,3 @@ write.csv(Cabfare_wrt_datetime,"cabfare_predictions_R.csv",row.names = FALSE)
 
 
 
-x1<- which(cabfare$fare_amount<= 0)
-x2<- which(cabfare$passenger_count> 6)
-x3<- which(cabfare$passenger_count< 1)
-x4<- which(cabfare$pickup_longitude==0)
-x5<- which(cabfare$pickup_longitude> 180)
-x6<- which(cabfare$pickup_longitude< -180)
-x7<- which(cabfare$dropoff_longitude==0)
-x8<- which(cabfare$dropoff_longitude> 180)
-x9<- which(cabfare$dropoff_longitude< -180)
-x10<- which(cabfare$pickup_latitude==0)
-x11<- which(cabfare$pickup_latitude> 90)
-x12<- which(cabfare$pickup_latitude< -90)
-x13<-which(cabfare$dropoff_latitude> 90)
-x14<- which(cabfare$dropoff_latitude< -90)
-x15<- which(cabfare$dropoff_latitude==0)
-
-
- cabfare$fare_amount[which(cabfare$fare_amount<= 0)]=NA
-x2<- cabfare[which(cabfare$passenger_count> 6),]
-x3<- cabfare[which(cabfare$passenger_count< 1),]
-x4<- cabfare[which(cabfare$pickup_longitude==0),]
-x5<- which(cabfare$pickup_longitude> 180)
-x6<- which(cabfare$pickup_longitude< -180)
-x7<- which(cabfare$dropoff_longitude==0)
-x8<- which(cabfare$dropoff_longitude> 180)
-x9<- which(cabfare$dropoff_longitude< -180)
-x10<- which(cabfare$pickup_latitude==0)
-x11<- which(cabfare$pickup_latitude> 90)
-x12<- which(cabfare$pickup_latitude< -90)
-x13<-which(cabfare$dropoff_latitude> 90)
-x14<- which(cabfare$dropoff_latitude< -90)
-x15<- which(cabfare$dropoff_latitude==0)
-
-X_total<- c(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15)
